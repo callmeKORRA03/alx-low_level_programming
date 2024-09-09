@@ -1,22 +1,25 @@
 #include "hash_tables.h"
+
 /**
-*hash_table_set - set item in hash table
-*@ht: - hash table
-*@key: key used to make hashing
-*@value: value of item crosponding to key
-*Return: 0 on faliure and 1 on success
-*/
+ * hash_table_set - Add or update an element in a hash table.
+ * @ht: A pointer to the hash table.
+ * @key: The key to add - cannot be an empty string.
+ * @value: The value associated with key.
+ *
+ * Return: Upon failure - 0.
+ *         Otherwise - 1.
+ */
 int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 {
 	hash_node_t *new;
-	char *cp_value;
+	char *value_copy;
 	unsigned long int index, i;
 
 	if (ht == NULL || key == NULL || *key == '\0' || value == NULL)
 		return (0);
 
-	cp_value = strdup(value);
-	if (cp_value == NULL)
+	value_copy = strdup(value);
+	if (value_copy == NULL)
 		return (0);
 
 	index = key_index((const unsigned char *)key, ht->size);
@@ -25,7 +28,7 @@ int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 		if (strcmp(ht->array[i]->key, key) == 0)
 		{
 			free(ht->array[i]->value);
-			ht->array[i]->value = cp_value;
+			ht->array[i]->value = value_copy;
 			return (1);
 		}
 	}
@@ -33,7 +36,7 @@ int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 	new = malloc(sizeof(hash_node_t));
 	if (new == NULL)
 	{
-		free(cp_value);
+		free(value_copy);
 		return (0);
 	}
 	new->key = strdup(key);
@@ -42,7 +45,7 @@ int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 		free(new);
 		return (0);
 	}
-	new->value = cp_value;
+	new->value = value_copy;
 	new->next = ht->array[index];
 	ht->array[index] = new;
 
